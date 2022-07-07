@@ -46,7 +46,7 @@ class autoencoder(Model):
         if transpose:
             self.decoder.add(layers.Conv2DTranspose(2**d*filters, kernel_size=(2,2), strides=2, padding='same'))
         else:
-            self.decoder.add(sym_padding(padding=(1,1)))
+            self.decoder.add(symmetric_padding(padding=(1,1)))
             self.decoder.add(layers.Conv2D(2**d*filters, kernel_size, **kwargs['decoder_kwargs']))
         if batch_normalization:
             self.decoder.add(layers.BatchNormalization())
@@ -55,7 +55,7 @@ class autoencoder(Model):
             self.decoder.add(layers.UpSampling2D((2,2)))
 
 
-    self.decoder.add(sym_padding(padding=(1,1)))
+    self.decoder.add(symmetric_padding(padding=(1,1)))
     self.decoder.add(layers.Conv2D(1, 3, **kwargs['output_kwargs']))
 
   def call(self, input):
