@@ -123,6 +123,17 @@ def training(model, loss, output_name, training_generator, validation_generator)
 
     np.save(f'./checkpoints/{output_name}/history.npy',history.history)
 
+
+    # Generate file with model performance
+    min_loss = np.amin(history.history['loss'])
+    min_val_loss = np.amin(history.history['val_loss'])
+
+    output_text = f'Model name\tTraining time (min)\tLoss\tValidation loss\n{output_name}\t{(end-start)/60.}\t{min_loss}\t{min_val_loss}'
+
+    f = open('model_performance.txt','a')
+    f.write(output_text)
+    f.close()
+
     return model
 
 
