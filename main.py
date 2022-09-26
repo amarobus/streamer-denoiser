@@ -70,6 +70,9 @@ def main():
         output_name += '_T'
         title += f'\nTranspose'
 
+    with open(f'{output_name}.yaml', 'w') as file:
+        yaml.dump(kwargs, file)
+
     # Training, validation, and test data generators
     training_generator = data_generator.DataGenerator(batch_size = batch_size, shuffle = True)
     validation_generator = data_generator.DataGenerator(batch_size = batch_size, shuffle = True, valid = True)
