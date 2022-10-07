@@ -53,7 +53,7 @@ def main():
         'custom_padding': custom_padding}
 
 
-    # Generate output name and title
+    # Generate output name
     output_name = f'{model_name}_{filters}F{kernel_size}'
     title = f'Model name: {model_name}\n{filters} Filters {kernel_size}x{kernel_size}'
 
@@ -83,29 +83,11 @@ def main():
     validation_generator = data_generator.DataGenerator(batch_size = batch_size, dim = input_shape, mask = mask,  shuffle = True, valid = True)
     test_generator = data_generator.DataGenerator(batch_size = batch_size, dim = input_shape, mask = mask, shuffle=True, test = True)
 
-    # Training
+    # Initiate model structure
     model = nn_model.autoencoder(**kwargs)
+
+    # Compile model
     loss = tf.keras.losses.MeanSquaredError()
-    model = training(model, loss, output_name, training_generator, validation_generator)
-
-    try:
-        model = tf.keras.models.load_model(f'./checkpoints/{output_name}')
-    except:
-        pass
-
-    # Evaluation
-    test_loss = model.evaluate(test_generator)
-    print(f'Test loss: {test_loss}')
-
-    # Plots to visualize results
-    X_test, Y_test = test_generator.__getitem__(0)
-    utils.plot_original_clean(model, X_test, Y_test, output_name)
-    utils.plot_errors(model, X_test, Y_test, output_name)
-    utils.plot_history(model, output_name)
-
-
-def training(model, loss, output_name, training_generator, validation_generator):
-
     opt = tf.keras.optimizers.Adam(learning_rate = 0.0025)
     model.compile(optimizer=opt, loss=loss)
 
@@ -115,6 +97,7 @@ def training(model, loss, output_name, training_generator, validation_generator)
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(f'./checkpoints/{output_name}',
                                                             monitor='val_loss', mode='min',save_best_only=True)
 
+    # Training
     start = time.time()
     history = model.fit(training_generator,
                     epochs=1000,
@@ -126,24 +109,35 @@ def training(model, loss, output_name, training_generator, validation_generator)
     end = time.time()
     print(f'Training: {(end - start)/60.} min')
 
-    model.encoder.summary()
-    model.decoder.summary()
-
-
+    # Save history
     np.save(f'./checkpoints/{output_name}/history.npy',history.history)
 
-
-    # Generate file with model performance
     min_loss = np.amin(history.history['loss'])
     min_val_loss = np.amin(history.history['val_loss'])
 
-    output_text = f'Model name\tTraining time (min)\tLoss\tValidation loss\n{output_name}\t{(end-start)/60.}\t{min_loss}\t{min_val_loss}'
+    # Dataframe with model stats
+    model_stats = pd.DataFrame({'Model':output_name, 'Time':(end-start)/60., 'Loss':min_loss, 'Valid Loss':min_val_loss})
 
-    f = open('model_performance.txt','a')
-    f.write(output_text)
-    f.close()
+    # Load last checkpoint
+    try:
+        model = tf.keras.models.load_model(f'./checkpoints/{output_name}')
+    except:
+        pass
 
-    return model
+    # Evaluation
+    test_loss = model.evaluate(test_generator)
+    print(f'Test loss: {test_loss}')
+
+    model_stats['Test Loss'] = test_loss
+
+    # Generate file with model performance
+    model_stats.to_csv('model_performance.txt', index=None, header=None, sep=' ', mode='a')
+
+    # Plots to visualize results
+    X_test, Y_test = test_generator.__getitem__(0)
+    utils.plot_original_clean(model, X_test, Y_test, output_name)
+    utils.plot_errors(model, X_test, Y_test, output_name)
+    utils.plot_history(model, output_name)
 
 
 if __name__ == '__main__':

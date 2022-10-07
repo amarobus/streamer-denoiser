@@ -68,8 +68,6 @@ class autoencoder(Model):
     return decoded
 
 
-
-
 class symmetric_padding(layers.Layer):
     def __init__(self, padding=(1,1), **kwargs):
         self.padding = tuple(padding)
