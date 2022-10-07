@@ -99,8 +99,9 @@ def main():
 
     # Plots to visualize results
     X_test, Y_test = test_generator.__getitem__(0)
-    utils.plot_original_clean(model, X_test, Y_test, title, output_name)
-    utils.plot_history(model, title, output_name)
+    utils.plot_original_clean(model, X_test, Y_test, output_name)
+    utils.plot_errors(model, X_test, Y_test, output_name)
+    utils.plot_history(model, output_name)
 
 
 def training(model, loss, output_name, training_generator, validation_generator):
