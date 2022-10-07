@@ -30,7 +30,7 @@ class autoencoder(Model):
         self.encoder.add(layers.Conv2D(2**d*filters, kernel_size, **kwargs['encoder_kwargs']))
         if batch_normalization:
             self.encoder.add(layers.BatchNormalization())
-        self.encoder.add(layers.Activation('relu'))
+        self.encoder.add(layers.Activation(activation))
         if average_pooling:
             self.encoder.add(layers.AveragePooling2D((2,2)))
         if max_pooling:
@@ -53,7 +53,7 @@ class autoencoder(Model):
             self.decoder.add(layers.Conv2D(2**d*filters, kernel_size, **kwargs['decoder_kwargs']))
         if batch_normalization:
             self.decoder.add(layers.BatchNormalization())
-        self.decoder.add(layers.Activation('relu'))
+        self.decoder.add(layers.Activation(activation))
         if upsampling:
             self.decoder.add(layers.UpSampling2D((2,2)))
 
