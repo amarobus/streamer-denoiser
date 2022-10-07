@@ -44,7 +44,7 @@ def main():
         'encoder_kwargs' : {"padding": "same", "strides": 1},
         'decoder_kwargs' : {"padding": "same", "strides": 1},
         'num_layers': layers,
-        'output_kwargs': {"padding": "valid", "strides": 1},# "activation": "tanh"},
+        'output_kwargs': {"padding": "same", "strides": 1},# "activation": "tanh"},
         'batch_normalization': batch_normalization,
         'max_pooling': max_pooling,
         'average_pooling': average_pooling,
@@ -88,7 +88,7 @@ def main():
 
     # Compile model
     loss = tf.keras.losses.MeanSquaredError()
-    opt = tf.keras.optimizers.Adam(learning_rate = 0.0025)
+    opt = tf.keras.optimizers.Adam(learning_rate = 0.001)
     model.compile(optimizer=opt, loss=loss)
 
     # Callbacks
