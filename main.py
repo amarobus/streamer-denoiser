@@ -18,11 +18,11 @@ except:
 
 def main():
 
-    # Mask to be applied when loading data
+    # Mask to be applied to the loaded data
     mask = (2304, None, None, None)
 
     # Model settings
-    input_shape = (5632, 1536)
+    input_shape = (7936, 1536)
     layers = 3
     loss_name = 'MSE'
     model_name = 'autoencoder'
