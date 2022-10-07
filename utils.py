@@ -21,7 +21,7 @@ def plot_original_clean(model, X, Y, output_name):
 
         # Plot result
         comparison = np.append(np.flip(prediction.squeeze(),axis=1), Y[index].squeeze(), axis=1)
-        plt.matshow(comparison.T, cmap='seismic')
+        plt.matshow(comparison.T, cmap='seismic', interpolation='none')
         plt.annotate('Clean', (0.1,0.7), xycoords='figure fraction', size=20, color='White')
         plt.annotate('Original', (0.1,0.2), xycoords='figure fraction', size=20, color='White')
         plt.axis('off')
