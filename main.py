@@ -62,24 +62,18 @@ def main():
 
     if max_pooling:
         output_name += '_MP'
-        title += f'\nDownsampling: MaxPooling'
     if average_pooling:
         output_name += '_AP'
-        title += f'\nDownsampling: AveragePooling'
     if batch_normalization:
         output_name += '_BN'
-        title += f'\nBatch Normalization'
     if upsampling:
         output_name += '_US'
-        title += f'\nUpsampling'
     if transpose:
         output_name += '_T'
-        title += f'\nTranspose'
     if custom_padding:
         output_name += f'_{custom_padding}'
-        title += f'\n{custom_padding}'
 
-    print(output_name)
+
     # Write settings in a file
     with open(f'{output_name}.yaml', 'w') as file:
         yaml.dump(kwargs, file)

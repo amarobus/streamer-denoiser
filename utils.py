@@ -6,7 +6,7 @@ import tensorflow as tf
 import pandas as pd
 import numpy as np
 
-def plot_original_clean(model, X, Y, title, output_name):
+def plot_original_clean(model, X, Y, output_name):
 
     try:
         os.mkdir('images')
@@ -24,21 +24,19 @@ def plot_original_clean(model, X, Y, title, output_name):
         plt.matshow(comparison.T, cmap='seismic')
         plt.annotate('Clean', (0.1,0.7), xycoords='figure fraction', size=20, color='White')
         plt.annotate('Original', (0.1,0.2), xycoords='figure fraction', size=20, color='White')
-        plt.title(title)
         plt.axis('off')
         plt.colorbar()
         plt.savefig(f'images/{index}_{output_name}.png', dpi=200, bbox_inches='tight')
         plt.close()
 
 
-def plot_history(model, title, output_name):
+def plot_history(model, output_name):
     try:
         os.mkdir('losses')
     except:
         pass
     history=np.load(f'./checkpoints/{output_name}/history.npy',allow_pickle='TRUE').item()
     pd.DataFrame(history).plot()
-    plt.title(title)
     plt.grid()
     plt.savefig(f'losses/{output_name}.png', dpi=200, bbox_inches='tight')
     plt.close()
