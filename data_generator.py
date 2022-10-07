@@ -9,7 +9,7 @@ seed = 2
 
 # Reference: https://github.com/keras-team/keras/blob/v2.7.0/keras/utils/data_utils.py#L411-L486
 class DataGenerator(keras.utils.Sequence):
-    def __init__(self,  batch_size = 16, dim = (4096, 768), n_channels = 1, shuffle = True, valid = False, test = False, clip = True):
+    def __init__(self,  batch_size = 4, dim = (7936, 1536), mask = (2304, None, None, None), n_channels = 1, shuffle = True, valid = False, test = False, clip = False):
 
         random.seed(seed)
         np.random.seed(seed)
@@ -43,9 +43,9 @@ class DataGenerator(keras.utils.Sequence):
             noisy_files = noisy_files[:int(0.7*num_samples)]
             original_files = original_files[:int(0.7*num_samples)]
 
-
-        self.dim = dim
         self.batch_size = batch_size
+        self.dim = dim
+        self.mask = mask
         self.n_channels = n_channels
         self.shuffle = shuffle
         self.noisy_files = noisy_files
@@ -59,6 +59,7 @@ class DataGenerator(keras.utils.Sequence):
         with h5py.File(file, 'r') as f:
             group = f['group1']
             data = np.array(group['charge_density'], dtype=np.float32)
+
 
         if self.clip:
             return np.clip(data,-1,1)
@@ -100,9 +101,15 @@ class DataGenerator(keras.utils.Sequence):
         X = np.zeros((self.batch_size, *self.dim, self.n_channels), dtype=np.float32)
         Y = np.zeros((self.batch_size, *self.dim, self.n_channels), dtype=np.float32)
 
-        for i, noisy_file in enumerate(noisy_files_temp):
-            X[i] = self.read_data(noisy_file)[::2,::2][1024:][...,None]
-            Y[i] = self.read_data(original_files_temp[i])[::2,::2][1024:][...,None]
-
+        mask = self.mask
+        if mask:
+            for i, noisy_file in enumerate(noisy_files_temp):
+                X[i] = self.read_data(noisy_file)[mask[0]:mask[1],mask[2]:mask[3]][...,None]
+                Y[i] = self.read_data(original_files_temp[i])[mask[0]:mask[1],mask[2]:mask[3]][...,None]
+        else:
+            for i, noisy_file in enumerate(noisy_files_temp):
+                X[i] = self.read_data(noisy_file)[...,None]
+                Y[i] = self.read_data(original_files_temp[i])[...,None]
+        
 
         return X, Y

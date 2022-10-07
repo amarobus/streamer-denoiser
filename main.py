@@ -3,6 +3,7 @@ import time
 import random
 import numpy as np
 import tensorflow as tf
+import yaml
 
 import data_generator
 import nn_model
@@ -17,8 +18,11 @@ except:
 
 def main():
 
+    # Mask to be applied when loading data
+    mask = (2304, None, None, None)
+
     # Model settings
-    input_shape = (4096, 768)
+    input_shape = (5632, 1536)
     layers = 3
     loss_name = 'MSE'
     model_name = 'autoencoder'
@@ -30,7 +34,7 @@ def main():
     filters = 16
     kernel_size = 3
     activation = 'relu'
-    batch_size = 12
+    batch_size = 4
 
     kwargs = {'input_shape': (*input_shape,1),
         'filters': filters,
@@ -74,9 +78,9 @@ def main():
         yaml.dump(kwargs, file)
 
     # Training, validation, and test data generators
-    training_generator = data_generator.DataGenerator(batch_size = batch_size, shuffle = True)
-    validation_generator = data_generator.DataGenerator(batch_size = batch_size, shuffle = True, valid = True)
-    test_generator = data_generator.DataGenerator(batch_size = batch_size, shuffle=True, test = True)
+    training_generator = data_generator.DataGenerator(batch_size = batch_size, dim = input_shape, mask = mask, shuffle = True)
+    validation_generator = data_generator.DataGenerator(batch_size = batch_size, dim = input_shape, mask = mask,  shuffle = True, valid = True)
+    test_generator = data_generator.DataGenerator(batch_size = batch_size, dim = input_shape, mask = mask, shuffle=True, test = True)
 
     # Training
     model = nn_model.autoencoder(**kwargs)
