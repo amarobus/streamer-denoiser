@@ -64,7 +64,7 @@ def plot_history(model, output_name):
     except:
         pass
     history=np.load(f'./checkpoints/{output_name}/history.npy',allow_pickle='TRUE').item()
-    pd.DataFrame(history).plot()
+    pd.DataFrame(history).plot(logy=True)
     plt.grid()
     plt.savefig(f'losses/{output_name}.png', dpi=200, bbox_inches='tight')
     plt.close()
@@ -82,8 +82,8 @@ class plot_losses(tf.keras.callbacks.Callback):
 
         it = np.arange(1, len(self.training_loss) + 1, 1)
 
-        plt.plot(it, self.training_loss, label='Training')
-        plt.plot(it, self.valid_loss, label='Validation')
+        plt.semilogy(it, self.training_loss, label='Training')
+        plt.semilogy(it, self.valid_loss, label='Validation')
         plt.xlabel('Epoch')
         plt.ylabel('Loss')
         plt.legend()
