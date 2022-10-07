@@ -27,7 +27,7 @@ def main():
     loss_name = 'MSE'
     model_name = 'autoencoder'
     batch_normalization = False
-    max_pooling = True
+    max_pooling = False
     average_pooling = False
     upsampling = True
     transpose = False
@@ -35,20 +35,22 @@ def main():
     kernel_size = 3
     activation = 'relu'
     batch_size = 4
+    custom_padding = None
 
     kwargs = {'input_shape': (*input_shape,1),
         'filters': filters,
         'kernel_size': kernel_size,
         'activation': activation,
-        'encoder_kwargs' : {"padding": "valid", "strides": 1},
-        'decoder_kwargs' : {"padding": "valid", "strides": 1},
+        'encoder_kwargs' : {"padding": "same", "strides": 1},
+        'decoder_kwargs' : {"padding": "same", "strides": 1},
         'num_layers': layers,
-        'output_kwargs': {"padding": "valid", "strides": 1, "activation": "tanh"},
+        'output_kwargs': {"padding": "valid", "strides": 1},# "activation": "tanh"},
         'batch_normalization': batch_normalization,
         'max_pooling': max_pooling,
         'average_pooling': average_pooling,
         'upsampling': upsampling,
-        'transpose': transpose}
+        'transpose': transpose,
+        'custom_padding': custom_padding}
 
 
     # Generate output name and title
@@ -73,7 +75,12 @@ def main():
     if transpose:
         output_name += '_T'
         title += f'\nTranspose'
+    if custom_padding:
+        output_name += f'_{custom_padding}'
+        title += f'\n{custom_padding}'
 
+    print(output_name)
+    # Write settings in a file
     with open(f'{output_name}.yaml', 'w') as file:
         yaml.dump(kwargs, file)
 

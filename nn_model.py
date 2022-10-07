@@ -16,6 +16,7 @@ class autoencoder(Model):
     batch_normalization = kwargs['batch_normalization']
     transpose = kwargs['transpose']
     activation = kwargs['activation']
+    custom_padding = kwargs['custom_padding']
 
     ##############################################
     #Encoder
@@ -24,7 +25,8 @@ class autoencoder(Model):
     self.encoder.add(layers.InputLayer(input_shape = encoder_input_shape))
 
     for d in range(num_layers):
-        self.encoder.add(symmetric_padding(padding=(1,1)))
+        if custom_padding == 'symmetric_padding':
+            self.encoder.add(symmetric_padding(padding=(1,1)))
         self.encoder.add(layers.Conv2D(2**d*filters, kernel_size, **kwargs['encoder_kwargs']))
         if batch_normalization:
             self.encoder.add(layers.BatchNormalization())
@@ -46,7 +48,8 @@ class autoencoder(Model):
         if transpose:
             self.decoder.add(layers.Conv2DTranspose(2**d*filters, kernel_size=(2,2), strides=2, padding='same'))
         else:
-            self.decoder.add(symmetric_padding(padding=(1,1)))
+            if custom_padding == 'symmetric_padding':
+                self.decoder.add(symmetric_padding(padding=(1,1)))
             self.decoder.add(layers.Conv2D(2**d*filters, kernel_size, **kwargs['decoder_kwargs']))
         if batch_normalization:
             self.decoder.add(layers.BatchNormalization())
@@ -54,8 +57,8 @@ class autoencoder(Model):
         if upsampling:
             self.decoder.add(layers.UpSampling2D((2,2)))
 
-
-    self.decoder.add(symmetric_padding(padding=(1,1)))
+    if custom_padding == 'symmetric_padding':
+        self.decoder.add(symmetric_padding(padding=(1,1)))
     self.decoder.add(layers.Conv2D(1, 3, **kwargs['output_kwargs']))
 
   def call(self, input):
