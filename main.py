@@ -117,7 +117,7 @@ def main():
     min_val_loss = np.amin(history.history['val_loss'])
 
     # Dataframe with model stats
-    model_stats = pd.DataFrame({'Model':output_name, 'Time':(end-start)/60., 'Loss':min_loss, 'Valid Loss':min_val_loss})
+    model_stats = pd.DataFrame({'Model':[output_name], 'Time':(end-start)/60., 'Loss':min_loss, 'Valid Loss':min_val_loss})
 
     # Load last checkpoint
     try:
