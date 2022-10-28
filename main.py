@@ -42,7 +42,7 @@ def main():
         'filters': filters,
         'kernel_size': kernel_size,
         'activation': activation,
-        'encoder_kwargs' : {"padding": "same", "strides": 1},
+        'encoder_kwargs' : {"padding": "same", "strides": 2},
         'decoder_kwargs' : {"padding": "same", "strides": 1},
         'num_layers': layers,
         'output_kwargs': {"padding": "same", "strides": 1},# "activation": "tanh"},
