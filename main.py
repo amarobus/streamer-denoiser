@@ -4,6 +4,7 @@ import random
 import numpy as np
 import tensorflow as tf
 import yaml
+import pandas as pd
 
 import data_generator
 import nn_model
