@@ -112,7 +112,6 @@ def main():
 
     # Save history
     np.save(f'./checkpoints/{output_name}/history.npy',history.history)
-
     min_loss = np.amin(history.history['loss'])
     min_val_loss = np.amin(history.history['val_loss'])
 
@@ -122,16 +121,19 @@ def main():
     # Load last checkpoint
     try:
         model = tf.keras.models.load_model(f'./checkpoints/{output_name}')
+        print('Load model (best checkpoint): Successful')
     except:
         pass
 
     # Evaluation
+    print('Evaluating model on the test dataset...')
     test_loss = model.evaluate(test_generator)
     print(f'Test loss: {test_loss}')
 
     model_stats['Test Loss'] = test_loss
 
     # Generate file with model performance
+    print('Saving model performance...')
     model_stats.to_csv('model_performance.txt', index=None, header=None, sep=' ', mode='a')
 
     # Plots to visualize results
