@@ -1,3 +1,4 @@
+import os
 import time
 import matplotlib
 matplotlib.use('Agg')
@@ -36,7 +37,7 @@ def plot_original_clean(model, X, Y, output_name):
 def plot_errors(model, X, Y, output_name):
 
     try:
-        os.mkdir('erros')
+        os.mkdir('errors')
     except:
         pass
 
