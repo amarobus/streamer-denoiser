@@ -56,8 +56,8 @@ def main():
 
     # Callbacks
     es_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', patience=10)
-    reduce_lr_callback = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-9)
-    checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(f'./checkpoints/{output_name}',
+    reduce_lr_callback = tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-9, verbose=1)
+    checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(f'./checkpoints/{output_name}', verbose=1,
                                                             monitor='val_loss', mode='min',save_best_only=True)
 
     # Training
