@@ -23,57 +23,16 @@ def main():
     mask = (2304, None, None, None)
 
     # Model settings
-    input_shape = (7936, 1536)
-    layers = 3
-    loss_name = 'MSE'
-    model_name = 'autoencoder'
-    batch_normalization = False
-    max_pooling = False
-    average_pooling = False
-    upsampling = True
-    transpose = False
-    filters = 16
-    kernel_size = 3
-    activation = 'relu'
-    batch_size = 4
-    custom_padding = None
+    with open('model.yaml') as file: 
+        # The FullLoader parameter handles the conversion from YAML 
+        # scalar values to Python the dictionary format 
+        kwargs = yaml.load(file, Loader=yaml.FullLoader) 
 
-    kwargs = {'input_shape': (*input_shape,1),
-        'filters': filters,
-        'kernel_size': kernel_size,
-        'activation': activation,
-        'encoder_kwargs' : {"padding": "same", "strides": 2},
-        'decoder_kwargs' : {"padding": "same", "strides": 1},
-        'num_layers': layers,
-        'output_kwargs': {"padding": "same", "strides": 1},# "activation": "tanh"},
-        'batch_normalization': batch_normalization,
-        'max_pooling': max_pooling,
-        'average_pooling': average_pooling,
-        'upsampling': upsampling,
-        'transpose': transpose,
-        'custom_padding': custom_padding}
-
-
-    # Generate output name
-    output_name = f'{model_name}_{filters}F{kernel_size}'
-    title = f'Model name: {model_name}\n{filters} Filters {kernel_size}x{kernel_size}'
-
-    title += f'\nLayers: {layers} \nLoss: {loss_name}'
-    output_name += f'_L{layers}_{loss_name}'
-
-    if max_pooling:
-        output_name += '_MP'
-    if average_pooling:
-        output_name += '_AP'
-    if batch_normalization:
-        output_name += '_BN'
-    if upsampling:
-        output_name += '_US'
-    if transpose:
-        output_name += '_T'
-    if custom_padding:
-        output_name += f'_{custom_padding}'
-
+    output_name = kwargs['output_name']
+    batch_size = kwargs['batch_size']
+    lr = kwargs['learning_rate']
+    epochs = kwargs['epochs']
+    input_shape = kwargs['input_shape']
 
     # Write settings in a file
     with open(f'{output_name}.yaml', 'w') as file:
@@ -88,8 +47,11 @@ def main():
     model = nn_model.autoencoder(**kwargs)
 
     # Compile model
-    loss = tf.keras.losses.MeanSquaredError()
-    opt = tf.keras.optimizers.Adam(learning_rate = 0.001)
+    if kwargs['loss'] == 'MSE':
+        loss = tf.keras.losses.MeanSquaredError()
+    elif kwargs['loss'] == 'MAE':
+        loss = tf.keras.losses.MeanAbsoluteError()
+    opt = tf.keras.optimizers.Adam(learning_rate = lr)
     model.compile(optimizer=opt, loss=loss)
 
     # Callbacks
@@ -101,7 +63,7 @@ def main():
     # Training
     start = time.time()
     history = model.fit(training_generator,
-                    epochs=1000,
+                    epochs=epochs,
                     #shuffle=False,
                     validation_data=validation_generator,
                     callbacks=[es_callback, reduce_lr_callback, checkpoint_callback, utils.plot_losses()],
@@ -132,7 +94,7 @@ def main():
 
     model_stats['Test Loss'] = test_loss
 
-    # Generate file with model performance
+    # Write file with model performance
     print('Saving model performance...')
     model_stats.to_csv('model_performance.txt', index=None, header=None, sep=' ', mode='a')
 

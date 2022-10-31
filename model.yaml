@@ -1,0 +1,38 @@
+output_name: autoencoder_16F3_L4_MSE_test
+loss: MSE
+learning_rate: 0.0001
+epochs: 1000
+batch_size: 4
+input_shape: [7936, 1536]
+custom_padding: null 
+encoder:
+  num_layers: 4
+  conv:
+    filters: 16
+    kernel_size: 3
+    kwargs:
+      padding: same
+      strides: 2
+  batch_normalization: false
+  activation: relu
+  pooling: null # null, max or average
+decoder:
+  num_layers: 4
+  conv:
+    filters: 16
+    kernel_size: 3
+    kwargs:
+      padding: same
+      strides: 1
+  batch_normalization: false
+  activation: relu
+  transpose: false
+  upsampling: true
+output_layer:
+  kwargs:
+    filters: 1
+    kernel_size: 1 
+    padding: same
+    strides: 1
+
+
