@@ -44,10 +44,19 @@ def main():
     with open(f'{output_name}.yaml', 'w') as file:
         yaml.dump(kwargs, file)
 
+
     # Training, validation, and test data generators
-    training_generator = data_generator.DataGenerator(batch_size = batch_size, dim = input_shape, mask = mask, shuffle = True)
-    validation_generator = data_generator.DataGenerator(batch_size = batch_size, dim = input_shape, mask = mask,  shuffle = True, valid = True)
-    test_generator = data_generator.DataGenerator(batch_size = batch_size, dim = input_shape, mask = mask, shuffle=True, test = True)
+    training_generator = data_generator.DataGenerator(paths = kwargs['paths'], batch_size = batch_size, 
+                                                        
+                                                        dim = input_shape, mask = mask, shuffle = True)
+
+    validation_generator = data_generator.DataGenerator(paths = kwargs['paths'], batch_size = batch_size, 
+                                                        
+                                                        dim = input_shape, mask = mask,  shuffle = True, valid = True)
+
+    test_generator = data_generator.DataGenerator(paths = kwargs['paths'], batch_size = batch_size, 
+                                                        
+                                                        dim = input_shape, mask = mask, shuffle=True, test = True)
 
     # Initiate model structure
     model = nn_model.autoencoder(**kwargs)

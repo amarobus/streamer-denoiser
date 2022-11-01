@@ -9,17 +9,14 @@ seed = 2
 
 # Reference: https://github.com/keras-team/keras/blob/v2.7.0/keras/utils/data_utils.py#L411-L486
 class DataGenerator(keras.utils.Sequence):
-    def __init__(self,  batch_size = 4, dim = (7936, 1536), mask = (2304, None, None, None), n_channels = 1, shuffle = True, valid = False, test = False, clip = False):
+    def __init__(self,  paths, batch_size = 4, dim = (7936, 1536), mask = (2304, None, None, None), n_channels = 1, shuffle = True, valid = False, test = False, clip = False):
 
         random.seed(seed)
         np.random.seed(seed)
 
-        original_dir = '/mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/original/'
-        noisy_dir = '/mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/noisy/'
-
         # Get file list
-        original_files = sorted(glob.glob(original_dir + '*.hdf'))
-        noisy_files = sorted(glob.glob(noisy_dir + '*.hdf'))
+        original_files = sorted(glob.glob(paths[0] + '*.hdf'))
+        noisy_files = sorted(glob.glob(paths[1] + '*.hdf'))
 
         num_samples = len(original_files)
         #shuffle list
