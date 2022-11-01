@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow as tf
 import yaml
 import pandas as pd
+import argparse
 
 import data_generator
 import nn_model
@@ -17,13 +18,18 @@ except:
   # Invalid device or cannot modify virtual devices once initialized.
   pass
 
+ap = argparse.ArgumentParser()
+ap.add_argument("-y", "--yaml", required=True,
+help="path to the model settings file")
+args = vars(ap.parse_args())
+
 def main():
 
     # Mask to be applied to the loaded data
     mask = (2304, None, None, None)
 
     # Model settings
-    with open('model.yaml') as file: 
+    with open(args['yaml']) as file: 
         # The FullLoader parameter handles the conversion from YAML 
         # scalar values to Python the dictionary format 
         kwargs = yaml.load(file, Loader=yaml.FullLoader) 
