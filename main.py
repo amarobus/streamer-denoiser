@@ -10,6 +10,7 @@ import argparse
 import data_generator
 import nn_model
 import utils
+import metrics
 
 physical_devices = tf.config.list_physical_devices('GPU')
 try:
@@ -67,7 +68,12 @@ def main():
     elif kwargs['loss'] == 'MAE':
         loss = tf.keras.losses.MeanAbsoluteError()
     opt = tf.keras.optimizers.Adam(learning_rate = lr)
-    model.compile(optimizer=opt, loss=loss)
+    
+    # Information about the computational mesh 
+    dr, dz = training_generator.dr, training_generator.dz
+    r = training_generator.r
+    
+    model.compile(optimizer=opt, loss=loss, metrics=[metrics.MSEC(r, dr, dz, name='MSEC')])
 
     # Callbacks
     es_callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', mode='min', patience=10)
@@ -107,7 +113,7 @@ def main():
     test_loss = model.evaluate(test_generator)
     print(f'Test loss: {test_loss}')
 
-    model_stats['Test Loss'] = test_loss
+    model_stats['Test Loss'] = test_loss[0]
 
     # Write file with model performance
     print('Saving model performance...')

@@ -48,8 +48,11 @@ class DataGenerator(keras.utils.Sequence):
         self.noisy_files = noisy_files
         self.original_files = original_files
         self.clip = clip
+        self.r = None
         # Shuffle indexes
         self.on_epoch_end()
+        # set up mesh information
+        self.read_data(original_files[0])
 
 
     def read_data(self, file):
@@ -57,6 +60,11 @@ class DataGenerator(keras.utils.Sequence):
             group = f['group1']
             data = np.array(group['charge_density'], dtype=np.float32)
 
+            if self.r is None:
+                self.dr = group.attrs['y.upper'] / group.attrs['y.num_cells']
+                self.dz = group.attrs['x.upper'] / group.attrs['x.num_cells']
+                self.rmax = group.attrs['y.upper']
+                self.r = np.arange(0 + self.dr/2., self.rmax, self.dr)[None,...][None,...,None]
 
         if self.clip:
             return np.clip(data,-1,1)
