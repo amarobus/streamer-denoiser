@@ -75,6 +75,70 @@ class autoencoder(Model):
     return decoded
 
 
+def autoencoder_func(**kwargs):
+
+    pad = kwargs['custom_padding']
+    
+    nxny_en = kwargs['input_shape']
+    fcv_en = kwargs['encoder']['conv']['filters']
+    ks_cv_en = kwargs['encoder']['conv']['kernel_size']
+    nol_en = kwargs['encoder']['num_layers']
+    ac_en = kwargs['encoder']['activation']
+    p_en= kwargs['encoder']['pooling']
+    bn_en = kwargs['encoder']['batch_normalization']
+
+    fcv_de = kwargs['decoder']['conv']['filters']
+    ks_cv_de = kwargs['decoder']['conv']['kernel_size']
+    nol_de = kwargs['decoder']['num_layers']
+    ac_de = kwargs['decoder']['activation']
+    up_de = kwargs['decoder']['upsampling']
+    bn_de = kwargs['decoder']['batch_normalization']
+    transpose = kwargs['decoder']['transpose']
+
+    ##############################################
+    #Encoder
+    ##############################################
+    input = Input(shape=(None,None,1))
+
+    for d in range(nol_en):
+        if pad == 'symmetric_padding':
+            if d==0:
+                x = input
+            x=symmetric_padding(padding=(1,1))(x)
+        x=Conv2D(2**d*fcv_en, ks_cv_en, **kwargs['encoder']['conv']['kwargs'])(x)
+        if bn_en:
+            x=BatchNormalization()(x)
+        x=Activation(ac_en)(x)
+        if p_en == 'average':
+            x=AveragePooling2D((2,2))(x)
+        if p_en == 'max':
+            x=MaxPooling2D((2,2))(x)
+
+    ##############################################
+    #Decoder
+    ##############################################
+    for d in range(nol_de)[::-1]:
+        if transpose:
+            x=Conv2DTranspose(2**d*fcv_de, kernel_size=(2,2), strides=2, padding='same')(x)
+        else:
+            if pad == 'symmetric_padding':
+                x=symmetric_padding(padding=(1,1))(x)
+            x=Conv2D(2**d*fcv_de, ks_cv_de, **kwargs['decoder']['conv']['kwargs'])(x)
+        if bn_de:
+           x= BatchNormalization()(x)
+        x=Activation(ac_de)(x)
+        if up_de:
+           x=UpSampling2D((2,2))(x)
+
+    if pad == 'symmetric_padding':
+        x=symmetric_padding(padding=(1,1))(x)
+    output = Conv2D(**kwargs['output_layer']['kwargs'])(x)
+
+    model = Model(inputs=[input], outputs=[output])
+
+    return model
+
+
 class symmetric_padding(Layer):
     def __init__(self, padding=(1,1), **kwargs):
         self.padding = tuple(padding)

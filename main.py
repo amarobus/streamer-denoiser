@@ -60,7 +60,7 @@ def main():
                                                         dim = input_shape, mask = mask, shuffle=True, test = True)
 
     # Initiate model structure
-    model = nn_model.autoencoder(**kwargs)
+    model = nn_model.autoencoder_func(**kwargs)
 
     # Compile model
     if kwargs['loss'] == 'MSE':
