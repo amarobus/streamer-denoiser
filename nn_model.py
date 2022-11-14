@@ -147,3 +147,8 @@ class symmetric_padding(Layer):
     def call(self, input_tensor, mask=None):
         padding_width, padding_height = self.padding
         return pad(input_tensor, [[0,0], [padding_height, padding_height], [padding_width, padding_width], [0,0] ], 'SYMMETRIC')
+
+    def get_config(self):
+        config = super(symmetric_padding, self).get_config()
+        config.update({"padding": self.padding})
+        return config
