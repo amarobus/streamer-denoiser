@@ -1,6 +1,6 @@
 paths: 
-- /mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/original/
-- /mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/noisy/
+- [/mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/original/, /mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/original/]
+- [/mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/noisy_10/, /mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/noisy/]
 output_name: autoencoder_16F3_L4_MSE_test
 loss: MSE
 learning_rate: 0.0001

@@ -15,8 +15,16 @@ class DataGenerator(keras.utils.Sequence):
         np.random.seed(seed)
 
         # Get file list
-        original_files = sorted(glob.glob(paths[0] + '*.hdf'))
-        noisy_files = sorted(glob.glob(paths[1] + '*.hdf'))
+        original_files = []
+        noisy_files = []
+        if isinstance(paths[0], list):
+            for ii in range(len(paths[0])):
+                original_files.extend(sorted(glob.glob(paths[0][ii] + '*.hdf')))
+            for jj in range(len(paths[1])):
+                noisy_files.extend(sorted(glob.glob(paths[1][jj] + '*.hdf')))
+        else:
+            original_files = sorted(glob.glob(paths[0] + '*.hdf'))
+            noisy_files = sorted(glob.glob(paths[1] + '*.hdf'))
 
         num_samples = len(original_files)
         #shuffle list
