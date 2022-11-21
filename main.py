@@ -35,6 +35,7 @@ def main():
         # scalar values to Python the dictionary format 
         kwargs = yaml.load(file, Loader=yaml.FullLoader) 
 
+    resume = kwargs['resume']
     output_name = kwargs['output_name']
     batch_size = kwargs['batch_size']
     lr = kwargs['learning_rate']
@@ -59,8 +60,11 @@ def main():
                                                         
                                                         dim = input_shape, mask = mask, shuffle=True, test = True)
 
-    # Initiate model structure
-    model = nn_model.autoencoder_func(**kwargs)
+    # Initiate model structure / load model
+    if resume:
+        model = tf.keras.models.load_model(f'checkpoints/{output_name}', compile=False)
+    else:
+        model = nn_model.autoencoder_func(**kwargs)
 
     # Compile model
     if kwargs['loss'] == 'MSE':
@@ -72,7 +76,9 @@ def main():
     # Information about the computational mesh 
     dr, dz = training_generator.dr, training_generator.dz
     r = training_generator.r
-    
+
+    if resume:
+        model.compile(loss=loss, metrics=[metrics.MSEC(r, dr, dz, name='MSEC')])
     model.compile(optimizer=opt, loss=loss, metrics=[metrics.MSEC(r, dr, dz, name='MSEC')])
 
     # Callbacks
@@ -89,16 +95,21 @@ def main():
                     validation_data=validation_generator,
                     callbacks=[es_callback, reduce_lr_callback, checkpoint_callback, utils.plot_losses()],
                     use_multiprocessing = True,
-                    workers = 6)
+                    workers = 10)
     end = time.time()
     print(f'Training: {(end - start)/60.} min')
 
     # Save history
+    if resume:
+        data = np.load(f'./checkpoints/{output_name}/history.npy', allow_pickle=True).item()
+        for key in data.keys():
+            history.history[key] = data[key] + history.history[key]
+         
     np.save(f'./checkpoints/{output_name}/history.npy',history.history)
-    min_loss = np.amin(history.history['loss'])
-    min_val_loss = np.amin(history.history['val_loss'])
 
     # Dataframe with model stats
+    min_loss = np.amin(history.history['loss'])
+    min_val_loss = np.amin(history.history['val_loss'])
     model_stats = pd.DataFrame({'Model':[output_name], 'Time':(end-start)/60., 'Loss':min_loss, 'Valid Loss':min_val_loss})
 
     # Load last checkpoint

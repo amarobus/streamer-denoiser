@@ -1,7 +1,8 @@
 paths: 
 - [/mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/original/, /mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/original/]
 - [/mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/noisy_10/, /mnt/lustre/scratch/nlsas/home/csic/eli/ama/data/charge_density/noisy/]
-output_name: autoencoder_16F3_L4_MSE_test
+resume: False
+output_name: autoencoder_16F3_L3_US_F1_MSE
 loss: MSE
 learning_rate: 0.0001
 epochs: 1000
@@ -9,7 +10,7 @@ batch_size: 4
 input_shape: [7936, 1536]
 custom_padding: null 
 encoder:
-  num_layers: 4
+  num_layers: 3
   conv:
     filters: 16
     kernel_size: 3
@@ -20,7 +21,7 @@ encoder:
   activation: relu
   pooling: null # null, max or average
 decoder:
-  num_layers: 4
+  num_layers: 3
   conv:
     filters: 16
     kernel_size: 3
