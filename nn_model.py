@@ -101,9 +101,9 @@ def autoencoder_func(**kwargs):
     input = Input(shape=(None,None,1))
 
     for d in range(nol_en):
+        if d==0:
+            x = input
         if pad == 'symmetric_padding':
-            if d==0:
-                x = input
             x=symmetric_padding(padding=(1,1))(x)
         x=Conv2D(2**d*fcv_en, ks_cv_en, **kwargs['encoder']['conv']['kwargs'])(x)
         if bn_en:
