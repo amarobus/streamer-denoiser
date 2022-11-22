@@ -114,7 +114,8 @@ def main():
 
     # Load last checkpoint
     try:
-        model = tf.keras.models.load_model(f'./checkpoints/{output_name}')
+        model = tf.keras.models.load_model(f'./checkpoints/{output_name}', compile=False)
+        model.compile(loss=loss, metrics=[metrics.MSEC(r, dr, dz, name='MSEC')])
         print('Load model (best checkpoint): Successful')
     except:
         pass
